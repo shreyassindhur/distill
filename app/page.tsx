@@ -413,8 +413,14 @@ export default function Home() {
     <button onClick={fn} disabled={dis} style={{ marginTop: "16px", padding: "12px 28px", fontFamily: MONO, fontSize: "12px", fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase", background: dis ? T.bgHover : (col === "accent" ? T.accent : T.amber), color: dis ? T.textFaint : (dark ? "#0C0C0F" : "#fff"), border: "none", cursor: dis ? "not-allowed" : "pointer", transition: "all 0.18s", borderRadius: "4px" }}>{label}</button>
   );
 
-  const coreTabs: { id: Mode; label: string }[] = [{ id: "topic", label: "Research" }, { id: "analyze", label: "Analyze" }, { id: "compare", label: "Compare" }];
-  const acadTabs: { id: Mode; label: string }[] = [{ id: "write_paper", label: "Literature Review" }];
+  const coreTabs: { id: Mode; label: string; tip: string }[] = [
+    { id: "topic", label: "Research", tip: "Research any topic — web + academic sources with evidence tags" },
+    { id: "analyze", label: "Analyze", tip: "Analyze a URL or PDF — checks claims against the web" },
+    { id: "compare", label: "Compare", tip: "Compare two subjects side by side" },
+  ];
+  const acadTabs: { id: Mode; label: string; tip: string }[] = [
+    { id: "write_paper", label: "Literature Review", tip: "IEEE-formatted review with real academic citations" },
+  ];
 
   const sidebarContent = (
     <div style={{ padding: sbOpen ? "24px 18px" : "24px 12px", display: "flex", flexDirection: "column", height: "100%" }}>
@@ -578,7 +584,7 @@ export default function Home() {
           <div style={{ marginBottom: p("24px", "20px") }}>
             <div style={{ display: "flex", borderBottom: `1px solid ${T.border}`, marginBottom: "-1px", alignItems: "center", overflowX: M ? "auto" : "visible", WebkitOverflowScrolling: M ? "touch" : undefined }}>
               {[...coreTabs, ...acadTabs].map(m => (
-                <button key={m.id} onClick={() => { setMode(m.id); setError(""); }}
+                <button key={m.id} title={m.tip} onClick={() => { setMode(m.id); setError(""); }}
                   style={{ padding: p("11px 18px", "10px 14px"), background: mode === m.id ? T.accentBg : "transparent", border: "none", borderBottom: `2px solid ${mode === m.id ? T.accent : "transparent"}`, cursor: "pointer", fontFamily: MONO, fontSize: p("11px", "10px"), fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", color: mode === m.id ? T.accent : T.textFaint, marginBottom: "-1px", whiteSpace: "nowrap", flexShrink: M ? 0 : undefined }}>
                   {m.label}
                 </button>
