@@ -409,7 +409,7 @@ export default function Home() {
     <div style={{ padding: sbOpen ? "24px 18px" : "24px 12px", display: "flex", flexDirection: "column", height: "100%" }}>
       <div style={{ display: "flex", flexDirection: "column", marginBottom: "28px" }}>
         <div style={{ display: "flex", alignItems: "center" }}>
-          <div style={{ width: sbOpen ? "44px" : "32px", height: sbOpen ? "44px" : "32px", background: T.accent, borderRadius: sbOpen ? "10px" : "7px", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.25s", position: "relative" }}>
+          <div onClick={() => { if (!M && !sbOpen) setSB(true); }} style={{ width: sbOpen ? "44px" : "32px", height: sbOpen ? "44px" : "32px", background: T.accent, borderRadius: sbOpen ? "10px" : "7px", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.25s", cursor: sbOpen ? "default" : "pointer", position: "relative" }}>
             <span style={{ fontFamily: SERIF, fontSize: sbOpen ? "22px" : "16px", fontWeight: 700, color: dark ? "#0C0C0F" : "#fff", fontStyle: "italic", lineHeight: 1 }}>D</span>
           </div>
           {sbOpen && <div style={{ marginLeft: "10px", display: "flex", flexDirection: "column" }}>
