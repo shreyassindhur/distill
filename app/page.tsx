@@ -305,10 +305,10 @@ export default function Home() {
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, `<a href="$2" target="_blank" style="color:${T.accent};text-decoration:underline;text-underline-offset:3px;text-decoration-color:${T.border}">$1</a>`)
     .replace(/\*\*([^*]+)\*\*/g, `<strong style="color:${T.text};font-weight:650">$1</strong>`)
     .replace(/\*([^*]+)\*/g, `<em style="color:${T.textMid}">$1</em>`)
-    .replace(/\[Established\]/g, `<span style="font-family:${MONO};font-size:11px;color:${T.sage};background:${T.sageBg};padding:2px 8px;border-radius:4px;letter-spacing:0.05em;font-weight:700;margin-left:4px;border-left:2px solid ${T.sage}">CONFIRMED</span>`)
+    .replace(/\[Confirmed\]/g, `<span style="font-family:${MONO};font-size:11px;color:${T.sage};background:${T.sageBg};padding:2px 8px;border-radius:4px;letter-spacing:0.05em;font-weight:700;margin-left:4px;border-left:2px solid ${T.sage}">CONFIRMED</span>`)
     .replace(/\[Emerging\]/g, `<span style="font-family:${MONO};font-size:11px;color:${T.amber};background:${T.amberBg};padding:2px 8px;border-radius:4px;letter-spacing:0.05em;font-weight:700;margin-left:4px;border-left:2px solid ${T.amber}">EMERGING</span>`)
-    .replace(/\[Contested\]/g, `<span style="font-family:${MONO};font-size:11px;color:${T.rust};background:${T.rustBg};padding:2px 8px;border-radius:4px;letter-spacing:0.05em;font-weight:700;margin-left:4px;border-left:2px solid ${T.rust}">DEBATED</span>`)
-    .replace(/\[Speculative\]/g, `<span style="font-family:${MONO};font-size:11px;color:${T.textFaint};background:${T.bgCard};padding:2px 8px;border-radius:4px;letter-spacing:0.05em;font-weight:700;margin-left:4px;border-left:2px solid ${T.textFaint}">UNCLEAR</span>`);
+    .replace(/\[Debated\]/g, `<span style="font-family:${MONO};font-size:11px;color:${T.rust};background:${T.rustBg};padding:2px 8px;border-radius:4px;letter-spacing:0.05em;font-weight:700;margin-left:4px;border-left:2px solid ${T.rust}">DEBATED</span>`)
+    .replace(/\[Unclear\]/g, `<span style="font-family:${MONO};font-size:11px;color:${T.textFaint};background:${T.bgCard};padding:2px 8px;border-radius:4px;letter-spacing:0.05em;font-weight:700;margin-left:4px;border-left:2px solid ${T.textFaint}">UNCLEAR</span>`);
 
   const parseSections = (text: string) => {
     const lines = text.split("\n"); const secs: { id: number; full: string }[] = [];
