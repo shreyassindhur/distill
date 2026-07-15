@@ -236,10 +236,17 @@ export default function Home() {
 
   const doExport = async (fmt: "pdf" | "word") => {
     if (!result) return;
-    const r = await fetch(`${API}/export/${fmt}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ topic: result.topic, report: result.report, format: fmt }) });
-    const blob = await r.blob();
-    const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
-    a.download = `distill-${result.topic.slice(0, 30).replace(/ /g, "-").toLowerCase()}.${fmt === "pdf" ? "pdf" : "docx"}`; a.click();
+    try {
+      const r = await fetch(`${API}/export/${fmt}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ topic: result.topic, report: result.report, format: fmt }) });
+      if (!r.ok) { setError("Export failed — backend not available"); return; }
+      const blob = await r.blob();
+      const filename = `distill-${result.topic.slice(0, 30).replace(/ /g, "-").toLowerCase()}.${fmt === "pdf" ? "pdf" : "docx"}`;
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click();
+      setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 200);
+    } catch { setError("Export failed"); }
   };
 
   const doLatex = async () => {
@@ -247,9 +254,13 @@ export default function Home() {
     try {
       const reportToUse = resPaper ? editReport : result.report;
       const r = await fetch(`${API}/export/latex`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ topic: result.topic, report: reportToUse, authors: "Distill Research Assistant" }) });
+      if (!r.ok) { setError("LaTeX export failed — backend not available"); return; }
       const blob = await r.blob();
-      const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
-      a.download = `distill-${result.topic.slice(0, 30).replace(/ /g, "-").toLowerCase()}.tex`; a.click();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a"); a.href = url;
+      a.download = `distill-${result.topic.slice(0, 30).replace(/ /g, "-").toLowerCase()}.tex`;
+      document.body.appendChild(a); a.click();
+      setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 200);
     } catch { setError("LaTeX export failed."); } finally { setExLatex(false); }
   };
 
