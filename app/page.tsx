@@ -485,10 +485,6 @@ export default function Home() {
           <p style={{ fontFamily: MONO, fontSize: "9px", color: T.textFaint, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "6px" }}>Did You Know?</p>
           <p key={factIdx} style={{ fontFamily: SANS, fontSize: "11px", color: T.textMid, lineHeight: "1.6", animation: "fadeIn 0.6s ease" }}>{FACTS[factIdx]}</p>
         </div>
-        <div style={{ marginTop: "auto", paddingTop: "14px", borderTop: `1px solid ${T.border}`, display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "1px", fontFamily: MONO }}>
-          <span style={{ fontSize: "10px", fontWeight: 600, color: T.textSub, letterSpacing: "0.02em" }}>{clock.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
-          <span style={{ fontSize: "8px", fontWeight: 500, color: T.textMid, letterSpacing: "0.08em" }}>{clock.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric", year: "numeric" }).toUpperCase()}</span>
-        </div>
       </>}
     </div>
   );
@@ -534,7 +530,7 @@ export default function Home() {
       )}
 
       {/* Main content */}
-      <main style={{ flex: 1, overflowY: "auto", position: "relative", zIndex: 1, marginTop: M ? "56px" : 0 }}>
+      <main style={{ flex: 1, overflowY: "auto", position: "relative", zIndex: 1, marginTop: M ? "56px" : 0, paddingBottom: "80px" }}>
         <div style={{ maxWidth: "1200px", margin: "0 auto", padding: mainPad }}>
 
           {/* Hero */}
@@ -807,6 +803,10 @@ export default function Home() {
         </div>
       )}
 
+      {!M && <div style={{ position: "fixed", bottom: "14px", right: "22px", zIndex: 50, display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "1px", fontFamily: MONO, pointerEvents: "none" }}>
+        <span style={{ fontSize: "10px", fontWeight: 600, color: T.textSub, letterSpacing: "0.02em" }}>{clock.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
+        <span style={{ fontSize: "8px", fontWeight: 500, color: T.textMid, letterSpacing: "0.08em" }}>{clock.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric", year: "numeric" }).toUpperCase()}</span>
+      </div>}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
         @keyframes cursorBlink { 0%,100% { opacity:1; } 50% { opacity:0; } }
