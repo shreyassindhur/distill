@@ -42,6 +42,7 @@ function playChime() {
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 const SESSION_KEY = "distill_session";
 const CREDIT_CACHE = "distill_credits_v2";
+const HISTORY_KEY = "distill_history_v2";
 const CREDIT_COST: Record<Mode, number> = { topic: 2, analyze: 2, compare: 3, write_paper: 6 };
 type Mode = "topic" | "analyze" | "compare" | "write_paper";
 interface Report { topic: string; report: string; sources_found: number; followups: string[]; contested?: string; mode?: string; }
@@ -175,11 +176,14 @@ export default function Home() {
         } catch {}
         if (cached) try { setCd(JSON.parse(cached)); } catch {}
       }
+      const saved = localStorage.getItem(HISTORY_KEY);
+      if (saved) try { setHistory(JSON.parse(saved)); } catch {}
     })();
     setTimeout(() => setHeroIn(true), 60);
   }, []);
   useEffect(() => { const id = setInterval(() => setFactIdx(p => (p + 1) % FACTS.length), 10000); return () => clearInterval(id); }, []);
   useEffect(() => { const id = setInterval(() => setHeroHead(p => (p + 1) % HERO_HEADS.length), 60000); return () => clearInterval(id); }, []);
+  useEffect(() => { if (typeof window !== "undefined") localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); }, [history]);
   useEffect(() => { const id = setInterval(() => setClock(new Date()), 1000); return () => clearInterval(id); }, []);
   useEffect(() => { setMounted(true); }, []);
 
