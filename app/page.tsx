@@ -145,6 +145,7 @@ export default function Home() {
   const [feedbackEmail, setFeedbackEmail] = useState("");
   const [editReport, setEditReport] = useState("");
   const [editSection, setEditSection] = useState<number | null>(null);
+  const [editing, setEditing] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [clock, setClock] = useState(new Date());
   const [mobileMenu, setMobileMenu] = useState(false);
@@ -241,8 +242,9 @@ export default function Home() {
 
   const doExport = async (fmt: "pdf" | "word") => {
     if (!result) return;
+    const reportToUse = editing ? editReport : result.report;
     try {
-      const r = await fetch(`${API}/export/${fmt}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ topic: result.topic, report: result.report, format: fmt }) });
+      const r = await fetch(`${API}/export/${fmt}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ topic: result.topic, report: reportToUse, format: fmt }) });
       if (!r.ok) { setError("Export failed — backend not available"); return; }
       const blob = await r.blob();
       const filename = `distill-${result.topic.slice(0, 30).replace(/ /g, "-").toLowerCase()}.${fmt === "pdf" ? "pdf" : "docx"}`;
@@ -673,13 +675,17 @@ export default function Home() {
                 </span>
               </div>}
 
-              {resPaper && <div style={{ marginBottom: "16px" }}>
-                <p style={{ fontFamily: SANS, fontSize: "11.5px", color: T.textFaint, margin: 0, lineHeight: "1.5" }}>Click edit on any section below to add your own data, results, or methodology.</p>
-              </div>}
+              <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "8px" }}>
+                <button onClick={() => { setEditing(p => !p); if (!editing) setEditReport(result.report); }} style={{ padding: "4px 12px", fontFamily: MONO, fontSize: "9px", fontWeight: 700, background: editing ? T.accent : "transparent", color: editing ? (dark ? "#0C0C0F" : "#fff") : T.textMid, border: `1px solid ${editing ? T.accent : T.borderStrong}`, borderRadius: "4px", cursor: "pointer", letterSpacing: "0.03em", textTransform: "uppercase", transition: "all 0.15s" }}>
+                  {editing ? "✓ Done Editing" : "✎ Edit Draft"}
+                </button>
+              </div>
 
-              {resPaper ? (
-                <div style={{ marginBottom: p("48px", "36px") }}>
-                  {parseSections(editReport).map((sec) => (
+              <div style={{ marginBottom: p("48px", "36px") }}>
+                {!editing ? (
+                  renderReport(result.report)
+                ) : (
+                  parseSections(editReport).map((sec) => (
                     <div key={sec.id} style={{ marginBottom: "8px", position: "relative" }}>
                       {editSection === sec.id ? (
                         <div>
@@ -690,17 +696,15 @@ export default function Home() {
                       ) : (
                         <div>
                           {renderReport(sec.full)}
-                          {sec.id === editSection && <div style={{ textAlign: "right", marginTop: "2px" }}>
+                          <div style={{ textAlign: "right", marginTop: "2px" }}>
                             <button onClick={() => setEditSection(sec.id)} style={{ padding: "2px 10px", fontFamily: MONO, fontSize: "9px", fontWeight: 700, background: "transparent", color: T.accent, border: `1px solid ${T.accent}`, borderRadius: "3px", cursor: "pointer", letterSpacing: "0.02em", opacity: 0.45 }}>✎ Edit section</button>
-                          </div>}
+                          </div>
                         </div>
                       )}
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <div style={{ marginBottom: p("48px", "36px") }}>{renderReport(result.report)}</div>
-              )}
+                  ))
+                )}
+              </div>
 
               {!isPaper && result.contested && renderContested(result.contested) && (
                 <div style={{ marginBottom: p("40px", "32px"), paddingTop: p("28px", "24px"), borderTop: `1px solid ${T.border}` }}>
