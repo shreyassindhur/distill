@@ -140,6 +140,8 @@ export default function Home() {
   const [feedbackRating, setFeedbackRating] = useState(0);
   const [feedbackLove, setFeedbackLove] = useState("");
   const [feedbackImprove, setFeedbackImprove] = useState("");
+  const [feedbackName, setFeedbackName] = useState("");
+  const [feedbackEmail, setFeedbackEmail] = useState("");
   const [editReport, setEditReport] = useState("");
   const [editSection, setEditSection] = useState<number | null>(null);
   const [mounted, setMounted] = useState(false);
@@ -761,7 +763,13 @@ export default function Home() {
             <textarea value={feedbackLove} onChange={e => setFeedbackLove(e.target.value)} placeholder="What did you love?"
               rows={2} style={{ width: "100%", padding: "8px 10px", fontFamily: SANS, fontSize: "12.5px", color: T.textSub, background: T.bg, border: `1px solid ${T.border}`, borderRadius: "4px", outline: "none", resize: "none", marginBottom: "14px" }} />
             <textarea value={feedbackImprove} onChange={e => setFeedbackImprove(e.target.value)} placeholder="What can we improve?"
-              rows={2} style={{ width: "100%", padding: "8px 10px", fontFamily: SANS, fontSize: "12.5px", color: T.textSub, background: T.bg, border: `1px solid ${T.border}`, borderRadius: "4px", outline: "none", resize: "none", marginBottom: "16px" }} />
+              rows={2} style={{ width: "100%", padding: "8px 10px", fontFamily: SANS, fontSize: "12.5px", color: T.textSub, background: T.bg, border: `1px solid ${T.border}`, borderRadius: "4px", outline: "none", resize: "none", marginBottom: "14px" }} />
+            <div style={{ display: "flex", gap: "10px", marginBottom: "14px" }}>
+              <input value={feedbackName} onChange={e => setFeedbackName(e.target.value)} placeholder="Your name (optional)"
+                style={{ flex: 1, padding: "8px 10px", fontFamily: SANS, fontSize: "12.5px", color: T.textSub, background: T.bg, border: `1px solid ${T.border}`, borderRadius: "4px", outline: "none" }} />
+              <input value={feedbackEmail} onChange={e => setFeedbackEmail(e.target.value)} placeholder="Your email (optional)"
+                style={{ flex: 1, padding: "8px 10px", fontFamily: SANS, fontSize: "12.5px", color: T.textSub, background: T.bg, border: `1px solid ${T.border}`, borderRadius: "4px", outline: "none" }} />
+            </div>
             <div style={{ display: "flex", gap: "4px", marginBottom: "20px" }}>
               {[1, 2, 3, 4, 5].map(n => (
                 <button key={n} onClick={() => setFeedbackRating(n)}
@@ -771,9 +779,9 @@ export default function Home() {
             <button onClick={async () => {
               if (!feedbackLove.trim() && !feedbackImprove.trim() && !feedbackRating) return;
               if (sessionId) {
-                try { const r = await fetch(`${API}/feedback`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ session_id: sessionId, love: feedbackLove, improve: feedbackImprove, rating: feedbackRating }) }); if (r.ok) { const d = await r.json(); if (d.credits) setCd(mapCD(d.credits)); } } catch {}
+                try { const r = await fetch(`${API}/feedback`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ session_id: sessionId, love: feedbackLove, improve: feedbackImprove, rating: feedbackRating, name: feedbackName, email: feedbackEmail }) }); if (r.ok) { const d = await r.json(); if (d.credits) setCd(mapCD(d.credits)); } } catch {}
               }
-              setCd(p => ({ ...p, feedbackGiven: true, feedbackDate: now(), feedbackText: `♥ ${feedbackLove}\n▲ ${feedbackImprove}\n★ ${feedbackRating}/5` }));
+              setCd(p => ({ ...p, feedbackGiven: true, feedbackDate: now(), feedbackText: `♥ ${feedbackLove}\n▲ ${feedbackImprove}\n★ ${feedbackRating}/5\n${feedbackName ? `Name: ${feedbackName}` : ""}${feedbackEmail ? `\nEmail: ${feedbackEmail}` : ""}` }));
               setShowFeedback(false); playChime();
             }}
               disabled={!feedbackLove.trim() && !feedbackImprove.trim() && !feedbackRating}
