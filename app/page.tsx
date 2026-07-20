@@ -76,10 +76,10 @@ const FACTS = [
   "India now publishes the third-most scientific research papers in the world, behind only China and the US.",
 ];
 
-interface CreditData { balance: number; feedbackGiven: boolean; feedbackDate: string; feedbackText: string; activeDays: string[]; lastWeeklyBonus: string; }
+interface CreditData { balance: number; feedbackGiven: boolean; feedbackDate: string; feedbackText: string; }
 const now = () => new Date().toDateString();
-const defCD = (): CreditData => ({ balance: 30, feedbackGiven: false, feedbackDate: "", feedbackText: "", activeDays: [], lastWeeklyBonus: "" });
-const mapCD = (d: Record<string, unknown>): CreditData => ({ balance: (d.balance as number) ?? 30, feedbackGiven: (d.feedback_given as boolean) ?? false, feedbackDate: (d.feedback_date as string) ?? "", feedbackText: (d.feedback_text as string) ?? "", activeDays: (d.active_days as string[]) ?? [], lastWeeklyBonus: (d.last_weekly_bonus as string) ?? "" });
+const defCD = (): CreditData => ({ balance: 30, feedbackGiven: false, feedbackDate: "", feedbackText: "" });
+const mapCD = (d: Record<string, unknown>): CreditData => ({ balance: (d.balance as number) ?? 30, feedbackGiven: (d.feedback_given as boolean) ?? false, feedbackDate: (d.feedback_date as string) ?? "", feedbackText: (d.feedback_text as string) ?? "" });
 
 function useMediaQuery(q: string) {
   const [m, setM] = useState(false);
@@ -183,15 +183,12 @@ export default function Home() {
 
   const store = useCallback((r: Report) => {
     setResult(r); setEditReport(r.report); setEditSection(null); setTimeout(playResult, 200);
-    const today = now();
-    const activeDays = cd.activeDays.includes(today) ? cd.activeDays : [...cd.activeDays, today];
     const usedCost = CREDIT_COST[mode] || 1;
-    const next = { ...cd, balance: Math.max(0, cd.balance - usedCost), activeDays };
+    const next = { ...cd, balance: Math.max(0, cd.balance - usedCost) };
     setCd(next);
     if (typeof window !== "undefined") localStorage.setItem(CREDIT_CACHE, JSON.stringify(next));
     if (sessionId) {
       fetch(`${API}/credits/deduct`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ session_id: sessionId, cost: usedCost }) });
-      fetch(`${API}/credits/activity`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ session_id: sessionId }) });
     }
     setHistory(prev => {
       if (prev.find(h => h.topic === r.topic)) return prev;
@@ -481,26 +478,6 @@ export default function Home() {
                 ))}
               </div>}
         </div>
-
-        {(() => {
-          const isActive = cd.activeDays.length >= 3;
-          const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7);
-          const canClaim = isActive && (!cd.lastWeeklyBonus || new Date(cd.lastWeeklyBonus) < weekAgo);
-          return (
-          <div style={{ marginTop: "10px", padding: "10px 12px", background: isActive ? T.accentBg : T.bgMuted, border: `1px solid ${isActive ? "rgba(110,231,183,0.15)" : T.border}`, borderRadius: "6px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "3px" }}>
-              <p style={{ fontFamily: MONO, fontSize: "8px", fontWeight: 700, color: isActive ? T.accent : T.textFaint, letterSpacing: "0.08em", textTransform: "uppercase", margin: 0 }}>Active Researcher</p>
-              {isActive && <span style={{ fontFamily: MONO, fontSize: "7px", color: T.accent, background: T.accentBg, padding: "1px 5px", borderRadius: "3px", letterSpacing: "0.05em", fontWeight: 700 }}>✓ {cd.activeDays.length}d</span>}
-            </div>
-            <p style={{ fontFamily: SANS, fontSize: "10px", color: isActive ? T.textSub : T.textFaint, lineHeight: "1.5", margin: "0 0 6px" }}>
-              {isActive ? `Used on ${cd.activeDays.length} day${cd.activeDays.length > 1 ? "s" : ""}.` : "Research on 3+ days for bonus credits."}
-            </p>
-            {canClaim && <button onClick={() => { if (sessionId) fetch(`${API}/credits/weekly-bonus`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ session_id: sessionId }) }).then(r => r.ok && r.json()).then(d => { if (d) setCd(mapCD(d)); }); }}
-              style={{ width: "100%", padding: "5px", fontFamily: MONO, fontSize: "8px", fontWeight: 700, background: T.accent, color: dark ? "#0C0C0F" : "#fff", border: "none", borderRadius: "3px", cursor: "pointer", letterSpacing: "0.03em", textTransform: "uppercase" }}>
-              Claim Weekly Bonus · +5
-            </button>}
-          </div>);
-        })()}
 
         <div style={{ paddingTop: "10px", borderTop: `1px solid ${T.border}`, marginTop: "10px" }}>
           <p style={{ fontFamily: MONO, fontSize: "9px", color: T.textFaint, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "6px" }}>Did You Know?</p>
