@@ -765,9 +765,9 @@ export default function Home() {
             <textarea value={feedbackImprove} onChange={e => setFeedbackImprove(e.target.value)} placeholder="What can we improve?"
               rows={2} style={{ width: "100%", padding: "8px 10px", fontFamily: SANS, fontSize: "12.5px", color: T.textSub, background: T.bg, border: `1px solid ${T.border}`, borderRadius: "4px", outline: "none", resize: "none", marginBottom: "14px" }} />
             <div style={{ display: "flex", gap: "10px", marginBottom: "14px" }}>
-              <input value={feedbackName} onChange={e => setFeedbackName(e.target.value)} placeholder="Your name (optional)"
+              <input value={feedbackName} onChange={e => setFeedbackName(e.target.value)} placeholder="Your name *"
                 style={{ flex: 1, padding: "8px 10px", fontFamily: SANS, fontSize: "12.5px", color: T.textSub, background: T.bg, border: `1px solid ${T.border}`, borderRadius: "4px", outline: "none" }} />
-              <input value={feedbackEmail} onChange={e => setFeedbackEmail(e.target.value)} placeholder="Your email (optional)"
+              <input value={feedbackEmail} onChange={e => setFeedbackEmail(e.target.value)} placeholder="Your email *"
                 style={{ flex: 1, padding: "8px 10px", fontFamily: SANS, fontSize: "12.5px", color: T.textSub, background: T.bg, border: `1px solid ${T.border}`, borderRadius: "4px", outline: "none" }} />
             </div>
             <div style={{ display: "flex", gap: "4px", marginBottom: "20px" }}>
@@ -776,18 +776,29 @@ export default function Home() {
                   style={{ width: p("40px", "36px"), height: p("36px", "34px"), background: feedbackRating >= n ? T.accent : T.bgMuted, color: feedbackRating >= n ? (dark ? "#0C0C0F" : "#fff") : T.textFaint, border: `1px solid ${feedbackRating >= n ? T.accent : T.border}`, borderRadius: "4px", cursor: "pointer", fontFamily: MONO, fontSize: "13px", fontWeight: 700 }}>{n}</button>
               ))}
             </div>
-            <button onClick={async () => {
-              if (!feedbackLove.trim() && !feedbackImprove.trim() && !feedbackRating) return;
-              if (sessionId) {
-                try { const r = await fetch(`${API}/feedback`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ session_id: sessionId, love: feedbackLove, improve: feedbackImprove, rating: feedbackRating, name: feedbackName, email: feedbackEmail }) }); if (r.ok) { const d = await r.json(); if (d.credits) setCd(mapCD(d.credits)); } } catch {}
-              }
-              setCd(p => ({ ...p, feedbackGiven: true, feedbackDate: now(), feedbackText: `♥ ${feedbackLove}\n▲ ${feedbackImprove}\n★ ${feedbackRating}/5\n${feedbackName ? `Name: ${feedbackName}` : ""}${feedbackEmail ? `\nEmail: ${feedbackEmail}` : ""}` }));
-              setShowFeedback(false); playChime();
-            }}
-              disabled={!feedbackLove.trim() && !feedbackImprove.trim() && !feedbackRating}
-              style={{ width: "100%", padding: "10px", fontFamily: MONO, fontSize: "11px", fontWeight: 700, background: (feedbackLove.trim() || feedbackImprove.trim() || feedbackRating) ? T.accent : T.bgMuted, color: (feedbackLove.trim() || feedbackImprove.trim() || feedbackRating) ? (dark ? "#0C0C0F" : "#fff") : T.textFaint, border: "none", borderRadius: "6px", cursor: (feedbackLove.trim() || feedbackImprove.trim() || feedbackRating) ? "pointer" : "not-allowed", letterSpacing: "0.04em", textTransform: "uppercase" }}>
-              Submit Feedback · +10 Credits
-            </button>
+            {(() => {
+              const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+              const validName = feedbackName.trim().length > 0;
+              const validEmail = emailRe.test(feedbackEmail.trim());
+              const canSubmit = (feedbackLove.trim() || feedbackImprove.trim() || feedbackRating) && validName && validEmail;
+              const err = !validName && (feedbackName.trim().length > 0 || feedbackImprove.trim() || feedbackLove.trim() || feedbackRating) ? "Name is required" :
+                          !validEmail && feedbackEmail.trim().length > 0 ? "Enter a valid email address" : "";
+              return <>
+              {err && <p style={{ fontFamily: SANS, fontSize: "11px", color: T.rust, margin: "0 0 10px" }}>{err}</p>}
+              <button onClick={async () => {
+                if (!canSubmit) return;
+                if (sessionId) {
+                  try { const r = await fetch(`${API}/feedback`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ session_id: sessionId, love: feedbackLove, improve: feedbackImprove, rating: feedbackRating, name: feedbackName, email: feedbackEmail }) }); if (r.ok) { const d = await r.json(); if (d.credits) setCd(mapCD(d.credits)); } } catch {}
+                }
+                setCd(p => ({ ...p, feedbackGiven: true, feedbackDate: now(), feedbackText: `♥ ${feedbackLove}\n▲ ${feedbackImprove}\n★ ${feedbackRating}/5\nName: ${feedbackName}\nEmail: ${feedbackEmail}` }));
+                setShowFeedback(false); playChime();
+              }}
+                disabled={!canSubmit}
+                style={{ width: "100%", padding: "10px", fontFamily: MONO, fontSize: "11px", fontWeight: 700, background: canSubmit ? T.accent : T.bgMuted, color: canSubmit ? (dark ? "#0C0C0F" : "#fff") : T.textFaint, border: "none", borderRadius: "6px", cursor: canSubmit ? "pointer" : "not-allowed", letterSpacing: "0.04em", textTransform: "uppercase" }}>
+                Submit Feedback · +10 Credits
+              </button>
+              </>;
+            })()}
           </div>
         </div>
       )}
