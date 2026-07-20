@@ -176,10 +176,12 @@ export default function Home() {
         } catch {}
         if (cached) try { setCd(JSON.parse(cached)); } catch {}
       }
-      const saved = localStorage.getItem(HISTORY_KEY);
-      if (saved) try { setHistory(JSON.parse(saved)); } catch {}
     })();
     setTimeout(() => setHeroIn(true), 60);
+  }, []);
+  useEffect(() => {
+    const saved = localStorage.getItem(HISTORY_KEY);
+    if (saved) try { setHistory(JSON.parse(saved)); } catch {}
   }, []);
   useEffect(() => { const id = setInterval(() => setFactIdx(p => (p + 1) % FACTS.length), 10000); return () => clearInterval(id); }, []);
   useEffect(() => { const id = setInterval(() => setHeroHead(p => (p + 1) % HERO_HEADS.length), 60000); return () => clearInterval(id); }, []);
