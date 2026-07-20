@@ -530,7 +530,7 @@ export default function Home() {
       )}
 
       {/* Main content */}
-      <main style={{ flex: 1, overflowY: "auto", position: "relative", zIndex: 1, marginTop: M ? "56px" : 0 }}>
+      <main style={{ flex: 1, overflowY: "auto", position: "relative", zIndex: 1, marginTop: M ? "56px" : 0, paddingBottom: "48px" }}>
         <div style={{ maxWidth: "1200px", margin: "0 auto", padding: mainPad }}>
 
           {/* Hero */}
