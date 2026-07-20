@@ -531,7 +531,7 @@ export default function Home() {
 
       {/* Main content */}
       <main style={{ flex: 1, overflowY: "auto", position: "relative", zIndex: 1, marginTop: M ? "56px" : 0, paddingBottom: "80px" }}>
-        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: mainPad }}>
+        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: mainPad, paddingRight: M ? undefined : "140px" }}>
 
           {/* Hero */}
           <div style={{ opacity: heroIn ? 1 : 0, transition: "opacity 1.2s ease", marginBottom: heroMb }}>
